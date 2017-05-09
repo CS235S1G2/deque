@@ -6,7 +6,7 @@
 *    This will contain the class definition of:
 *        Deque         : 
 * Author
-*    Nathan Bench, Jed Billman, Justin Chandler, Jeremy Chandler
+*    Nathan Bench, Jed Billman, Justin Chandler (Messi), Jeremy Chandler
 ************************************************************************/
 
 #ifndef DEQUE_H
