@@ -25,7 +25,7 @@ class Deque
 {
 public:
    // default constructor : empty and kinda useless
-   Deque() : m_numPush(0), m_numPop(0), m_capacity(0), m_data(NULL) {}
+   Deque() : m_iBack(-1), m_iFront(0), m_capacity(0), m_data(NULL) {}
 
    // copy constructor : copy it
    Deque(const Deque<T> & rhs) throw (const char *);
@@ -43,25 +43,31 @@ public:
    }
 
    // remove all the items from the container
-   void clear()        { m_numPush = m_numPop = 0;                 }
+   void clear() { m_iBack = -1; m_iFront = 0; }
 
    // how many items can the stack currently contain?
    int capacity() const { return m_capacity;             }
    
    // how many items are currently in the container?
-   int size() const    { return (m_numPush - m_numPop);              }   // cite: BYUI PDF page 83
+   int size() const    { return (m_iBack - m_iFront + 1);              }   // cite: BYUI PDF page 83
 
    // add an item to the back of the deque
-   void push(const T & t) throw (const char *);
+   void push_back(const T & t) throw (const char *);
+
+   // add an item to the fron to f the deque
+   void push_front(const T & t) throw (const char *);
+
+   // Removes an item from the back of the deque
+   void pop_back() throw (const char *);
 
    // Removes an item from the front of the deque
-   void pop() throw (const char *);
+   void pop_front() throw (const char *);
 
    // Returns the item currently at the front of the deque
    T & front()     throw (const char *);
    //T front() const throw (const char *);
    
-   // Returns the item currently at the front of the deque
+   // Returns the item currently at the back of the deque
    T & back()     throw (const char *);
    //T back() const throw (const char *);
    
@@ -70,13 +76,13 @@ public:
    
 private:
    T * m_data;          // dynamically allocated array of T
-   int m_numPush,       // cite: BYUI PDF page 82
-       m_numPop,
+   int m_iFront,       // cite: 
+       m_iBack,
        m_capacity;      // how many items can I put on the Deque before full?
    
    // private methods
-   int iHead() const { return m_numPop % m_capacity; }           // cite: BYUI PDF page 82
-   int iTail() const { return (m_numPush - 1) % m_capacity; }    // cite: BYUI PDF page 82
+   int iHead() const { return m_iFront % m_capacity; }           // cite: BYUI PDF page 82
+   int iTail() const { return (m_iBack - 1) % m_capacity; }    // cite: BYUI PDF page 82
    // increase capacity
    void resize(int newCap);
 };
@@ -103,8 +109,8 @@ Deque <T> :: Deque(const Deque <T> & rhs) throw (const char *)
       }
    
    // insure the indices are beginning at 0
-   m_numPop = 0;
-   m_numPush = 0;  
+   m_iFront = 0;
+   m_iBack = -1;  
    m_capacity = 0;
    
    int j = 0;
@@ -112,10 +118,10 @@ Deque <T> :: Deque(const Deque <T> & rhs) throw (const char *)
    if (rhs.size() > 0)
    {      
       // copy over data
-      for (int i = rhs.m_numPop; i < rhs.m_numPush; i++)
+      for (int i = rhs.m_iBack; i < rhs.m_iBack; i++)
       {
          m_data[j++] = rhs.m_data[(i % rhs.capacity())];
-	     m_numPush++;
+	     m_iBack++;
       }
 	  m_capacity = rhs.capacity();
    }
@@ -134,7 +140,8 @@ Deque <T> :: Deque(int capacity) throw (const char *)
    // do nothing if there is nothing to do
    if (m_capacity == 0)
    {
-      m_numPop = m_numPush = 0;
+	   m_iFront = 0;
+	   m_iBack = -1;
       m_data = NULL;
       return;
    }
@@ -152,7 +159,8 @@ Deque <T> :: Deque(int capacity) throw (const char *)
       
    // SET member variables
    m_capacity = capacity;
-   m_numPush = m_numPop = 0;
+   m_iBack = -1;
+   m_iFront = 0;
 
    // initialize the container by calling the default constructor
    for (int i = 0; i < m_capacity; i++)
@@ -160,31 +168,59 @@ Deque <T> :: Deque(int capacity) throw (const char *)
 }
 
 /***************************************************
-* DEQUE :: PUSH
+* DEQUE :: PUSH BACK
 * Adds an item to the back of the deque
 **************************************************/
 template<class T>
-void Deque<T>::push(const T & t) throw (const char *)
+void Deque<T>::push_back(const T & t) throw (const char *)
 {
 	if (size() == capacity())
 	{
 		resize(capacity() * 2);
 	}
    
-    m_numPush++;
+    m_iBack++;
 	m_data[iTail()] = t;
 }
 
 /***************************************************
-* DEQUE :: POP
-* Removes an item from the front of the deque
+* DEQUE :: PUSH FRONT
+* Adds an item to the front of the deque
 **************************************************/
 template<class T>
-void Deque<T>::pop() throw(const char *)
+inline void Deque<T>::push_front(const T & t) throw(const char *)
+{
+	if (size() == capacity())
+	{
+		resize(capacity() * 2);
+	}
+
+	m_iFront--;
+	m_data[iFront()] = t;
+}
+
+/***************************************************
+* DEQUE :: POP BACK
+* Removes an item from the back of the deque
+**************************************************/
+template<class T>
+inline void Deque<T>::pop_back() throw(const char *)
 {
 	if (empty())
 		throw "ERROR: attempting to pop from an empty deque";
-	m_numPop++;
+	m_iBack--;
+}
+
+/***************************************************
+* DEQUE :: POP FRONT
+* Removes an item from the front of the deque
+**************************************************/
+template<class T>
+void Deque<T>::pop_front() throw(const char *)
+{
+	if (empty())
+		throw "ERROR: attempting to pop from an empty deque";
+	m_iFront++;
 }
 
 /***************************************************
@@ -254,15 +290,15 @@ T Deque<T> :: back() const throw (const char *)
 
 		 int j = 0;
 		 // IF there is data to copy
-		 m_numPush = 0;
-		 m_numPop = 0;
+		 m_iBack = 0;
+		 m_iBack = 0;
 		 if (rhs.size() > 0)
 		 {
 			 // copy over data
-			 for (int i = rhs.m_numPop; i < rhs.m_numPush; i++)
+			 for (int i = rhs.m_iBack; i < rhs.m_iFront; i++)
 			 {
 				 m_data[j++] = rhs.m_data[(i % rhs.capacity())];
-				 m_numPush++;
+				 m_iBack++;
 			 }
 		 }
 	 }
@@ -287,8 +323,8 @@ void Deque<T>::resize(int newCap)
       {
          temp[i] = m_data[(iHead() + i) % capacity()];
       }
-	  m_numPush = size();
-	  m_numPop = 0;
+	  m_iBack = size();
+	  m_iBack = 0;
       m_capacity = newCap;
       
       // in with the new
