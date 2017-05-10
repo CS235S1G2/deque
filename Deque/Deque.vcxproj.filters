@@ -18,9 +18,15 @@
     <ClInclude Include="..\deque.h">
       <Filter>Header Files</Filter>
     </ClInclude>
+    <ClInclude Include="..\nowServing.h">
+      <Filter>Header Files</Filter>
+    </ClInclude>
   </ItemGroup>
   <ItemGroup>
     <ClCompile Include="..\week04.cpp">
+      <Filter>Source Files</Filter>
+    </ClCompile>
+    <ClCompile Include="..\nowServing.cpp">
       <Filter>Source Files</Filter>
     </ClCompile>
   </ItemGroup>
