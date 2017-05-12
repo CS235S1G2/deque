@@ -30,7 +30,7 @@ void nowServing()
    int minutes = 0;
    deque <Student> line;
    Student currentStudent;
-   //Student holder;
+   Student holder;
    
    // instructions
    cout << "Every prompt is one minute.  The following input is accepted:\n";
@@ -42,64 +42,56 @@ void nowServing()
    // your code here
    do
    {
-      // minute
-      cout << "<" << minutes << "> ";
+      // reset holder
+      Student a;
+      holder = a;
       
-      // get input
-      cin.ignore();
-      cin.clear();
-      getline(cin, input);
-      if (input != "finished")
+      // display minutes
+      cout << "<" << minutes << "> ";
+
+      // cite: Matt Burr Discussion Board 04 
+      string className;
+      string studentName;
+      int serviceMinutes;
+      bool isEmergent = false;
+     
+      cin >> className;
+      if (className == "finished")
+         break;
+      if (className != "none")
       {
          /*** input to student ***/      
-         // prep variables
-         int index = 0;
-         
-         int dIndex = 0; 
-         string data[3];
-            // data[0] -- name
-            // data[1] -- class name
-            // data[2] -- number
-         int number;
-         bool isEmergent = false;
-         
-         // find emergent case
-         if (input[0] == '!' && input[1] == '!' && input[2] == ' ')
+         if (className == "!!")
          {
+            cin >> className >> studentName >> serviceMinutes;
             isEmergent = true;
-            // set index to new start
-            index = 3;
-         }
-         
-         // parse input to data[]
-         for (index; index < input.size(); index++)
-         {
-            // IF space increase data's index
-            if (input[index] == ' ')
-            {
-               dIndex++;
-            }
-            
-            // copy char by char
-            data[dIndex] += input[index];  
-         }
-         
-         // convert data[2] to int
-         number = atoi(data[2].c_str()); // cite: Jeffry Simpson on discussion board
-         // handle non digit values
-         if (number <= 0)
-            number = 1;
-         
-         // initialize new student
-         Student holder(data[0], data[1], number, isEmergent);
-         
-         
-         /*** Student flow ***/
-         if (line.empty())
-         {
-            //currentStudent(holder);
          }
          else
+         {
+            cin >> studentName >> serviceMinutes;
+         }
+         // initialize new student
+         Student s(className, studentName, serviceMinutes, isEmergent);
+         holder = s;
+      } // IF input != finished || none
+      
+         /********************/
+         /*** Student flow ***/
+         /********************/
+         // IF no current student
+         if (currentStudent.getMinutes() == 0)
+         {
+            // IF empty queue
+            if (line.empty())
+               currentStudent = holder;
+            else
+            {
+               currentStudent = line.front();
+               line.pop_front();
+            }
+         }
+         // IF current student with time remaining
+         else if (currentStudent.getMinutes() > 1)
          {
             if (holder.isEmergent())
             {
@@ -110,40 +102,28 @@ void nowServing()
                line.push_back(holder);
             }
          }
-         
-         /*** Current Action ***/
-         // IF current student with time
-         if (currentStudent.getMinutes() > 0)
+         // IF emergency with 1 minute left
+         else if (currentStudent.getMinutes() == 1 &&
+                  holder.isEmergent())
          {
-            // emergent
-            if (currentStudent.isEmergent())
-            {
-               cout << "\tEmergency for "
-                    << currentStudent.getName()
-                    << "for class "
-                    << currentStudent.getClass()
-                    << ". Time left: "
-                    << currentStudent.getMinutes()
-                    << endl;
-            }
-            // non-emergent
-            else
-            {
-               cout << "\tCurrently serving "
-                    << currentStudent.getName()
-                    << "for class "
-                    << currentStudent.getClass()
-                    << ". Time left: "
-                    << currentStudent.getMinutes()
-                    << endl;
-            }
-         } // IF currentStudent.minutes > 0
-         
-         minutes++;
-      }
-      
+            currentStudent.display();
+            currentStudent = holder;
+            minutes++;
+            continue;
+         }
 
       
+      /**********************/
+      /*** Current Action ***/
+      /**********************/
+      // IF current student with time
+      if (currentStudent.getMinutes() > 0)
+      {
+         currentStudent.display();
+         currentStudent.subMin();
+      } // IF currentStudent.minutes > 0
+
+   minutes++;
    } while (input != "finished");
    // end
    cout << "End of simulation\n";
@@ -153,12 +133,41 @@ void nowServing()
  * STUDENT :: STUDENT
  * non-default constructor
  ***********************************************/
-Student :: Student(std::string & name, std::string & className, int & minutes, bool & emergency)
+Student :: Student(std::string & className, std::string & name, int & minutes, bool & emergency)
 {
-   this->name = name;
    this->className = className;
+   this->name = name;
    this->minutes = minutes;
    isEmergency = emergency;
+}
+
+/************************************************
+ * STUDENT :: DISPLAY
+ * display the contents of the student object
+ ***********************************************/
+void Student :: display()
+{
+   cout << (isEmergency ?  "\tEmergency for " : "\tCurrently serving ")
+        << name
+        << " for class "
+        << className
+        << ". Time left: "
+        << minutes
+        << endl;
+}
+
+/************************************************
+ * STUDENT :: ASSIGNMENT OPERATOR
+ * Assigns Student lhs to Student rhs
+ ***********************************************/
+Student & Student :: operator = (const Student & rhs)
+{
+   className = rhs.className;
+   name = rhs.name;
+   minutes = rhs.minutes;
+   isEmergency = rhs.isEmergency;
+   
+   return *this;
 } 
 
 
