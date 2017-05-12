@@ -1,13 +1,16 @@
 ###############################################################
 # Program:
 #     Week 04, DEQUE
-#     Brother XXXXX, CS235
+#     Brother Jonesl, CS235
 # Author:
-#     <your name here>
+#     Nathan Bench, Jed Billman, Jeremy Chandler, Justin Chandler
 # Summary:
-#     <put a description here>
+#     Implementation of the standard deque and application to a service list
 # Time:
-#     <how long did it take to complete this program>?
+#     Nate: 16 hrs
+#     Jed: 0 hrs
+#     Jeremy: 8 hrs
+#     Justin: 8 hrs
 ###############################################################
 
 ##############################################################
