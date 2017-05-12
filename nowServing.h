@@ -21,8 +21,8 @@ void nowServing();
  * STUDENT
  * name, class, minutes
  ***********************************************/
- class Student
- {
+class Student
+{
    private:
       std::string name;
       std::string className;
@@ -31,15 +31,13 @@ void nowServing();
       
    public:
       // default constructor
-      Student(): minutes(0) {}
+      Student(): name(""), className(""), minutes(0), isEmergency(false) {}
       
       // non-default constructor
-      Student(std::string & name, std::string & className, int & minutes, bool & emergency);
+      Student(std::string & className, std::string & name, int & minutes, bool & emergency);
       
-      // copy constructor
-      Student(const Student & rhs): name(rhs.name), className(rhs.className), 
-      minutes(rhs.minutes), isEmergency(rhs.isEmergency) 
-         {} 
+      // assignment operator
+      Student & operator = (const Student & rhs);
       
       // getters
       std::string getName()                  { return name;                 }
@@ -54,6 +52,9 @@ void nowServing();
       void setEmergency(bool emergency)      { isEmergency = emergency;      }
       
       void subMin()                          { minutes--;                   }
- };
+      
+      void display();
+};
 
 #endif // NOW_SERVING_H
+
