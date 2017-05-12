@@ -91,7 +91,7 @@ void nowServing()
             }
          }
          // IF current student with time remaining
-         else if (currentStudent.getMinutes() > 1)
+         else if (currentStudent.getMinutes() >= 1)
          {
             if (holder.isEmergent())
             {
