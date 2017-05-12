@@ -61,7 +61,7 @@ public:
    
 private:
    T * m_data;          // dynamically allocated array of T
-   int m_iFront,       // cite: 
+   int m_iFront,
        m_iBack,
        m_max;      // how many items can I put on the Deque before full?
    
@@ -272,14 +272,14 @@ T Deque<T> :: back() const throw (const char *)
  template <class T>
  Deque<T> & Deque <T> :: operator = (const Deque <T> & rhs)
  {
-   clear(); 
-   
     // resize array to the rhs
     if (m_max < rhs.size())
        resize(rhs.size());
+    
+    clear();
 
     // copy over data
-    for (int i = rhs.m_iBack; i < rhs.m_iFront; i++)
+    for (int i = rhs.m_iFront; i < rhs.m_iBack; i++)
     {
        push_back(rhs.m_data[iAbsoluteFromIRelative(i)]);
     }
@@ -295,10 +295,6 @@ void Deque<T>::resize(int newCap)
 {
    if (newCap == 0)
       newCap = 1;
-
-   oldIFront = getIFront;
-   
-   clear();
    
    try
    {
@@ -306,12 +302,14 @@ void Deque<T>::resize(int newCap)
       
       for (int i = 0; i < size(); i++)
       {
-         int index = (oldIFront + i) % m_max;
-         temp[i] = m_data[iAbsoluteFromIRelative(i)];
-      }
-	   m_iBack = size();
-	   m_iBack = 0;
+         temp[i] = m_data[(getIFront() + i) % m_max];
+      }              
+
+      m_iBack = size();
+      m_iFront = 0;
       m_max = newCap;
+      
+      delete [] m_data;
       
       // in with the new
       m_data = temp;       
@@ -322,7 +320,6 @@ void Deque<T>::resize(int newCap)
    {
       throw "ERROR: Unable to allocate a new buffer for Deque";
    }
-
 }
 
 #endif // DEQUE_H
